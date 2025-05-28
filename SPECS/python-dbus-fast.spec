@@ -1,23 +1,31 @@
 Name:           python-dbus-fast
-Version:        2.21.1
-Release:        0.01%{?dist}
+Version:        2.44.1
+Release:        %autorelease
 Summary:        A faster version of dbus-next
-
-# Check if the automatically generated License and its spelling is correct for Fedora
-# https://docs.fedoraproject.org/en-US/packaging-guidelines/LicensingGuidelines/
 License:        MIT
 URL:            https://github.com/bluetooth-devices/dbus-fast
-Source:         %{pypi_source dbus_fast}
+Source:         %{URL}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  python3-devel
 BuildRequires:  gcc
 
+# Cherry-picked from pyproject.toml section [tool.poetry.group.dev.dependencies]
+BuildRequires: python3-pytest
+BuildRequires: python3-pytest-cov
+BuildRequires: python3-pytest-asyncio
+BuildRequires: python3-cairo
+BuildRequires: python3-gobject
+# Used to run the tests
+BuildRequires: /usr/bin/dbus-run-session
 
-# Fill in the actual package description to submit package to Fedora
+
 %global _description %{expand:
-This is package 'dbus-fast' generated automatically by pyp2spec.}
+dbus-fast is a Python library for DBus that aims to be a performant fully
+featured high level library primarily geared towards integration of
+applications into Linux desktop and mobile environments.}
 
 %description %_description
+
 
 %package -n     python3-dbus-fast
 Summary:        %{summary}
@@ -26,11 +34,11 @@ Summary:        %{summary}
 
 
 %prep
-%autosetup -p1 -n dbus_fast-%{version}
+%autosetup -n dbus-fast-%{version}
 
 
 %generate_buildrequires
-%pyproject_buildrequires
+%pyproject_buildrequires -x tool.poetry.group.dev.dependencies
 
 
 %build
@@ -39,18 +47,19 @@ Summary:        %{summary}
 
 %install
 %pyproject_install
-# For official Fedora packages, including files with '*' +auto is not allowed
-# Replace it with a list of relevant Python modules/globs and list extra files in %%files
-%pyproject_save_files '*' +auto
+%pyproject_save_files -L dbus_fast
 
 
 %check
+%global __pytest dbus-run-session -- %{__pytest}
+%pytest -v -Wdefault --no-cov --ignore tests/benchmarks
+
 %pyproject_check_import
 
 
 %files -n python3-dbus-fast -f %{pyproject_files}
+%license LICENSE
 
 
 %changelog
-* Mon Feb 5 2024 Brian J. Murrell <brian@interlinx.bc.ca> - 2.21.1-0.01
-- Initial creation
+%autochangelog
