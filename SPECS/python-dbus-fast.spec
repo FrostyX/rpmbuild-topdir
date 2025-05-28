@@ -38,7 +38,7 @@ Summary:        %{summary}
 
 
 %generate_buildrequires
-%pyproject_buildrequires -x tool.poetry.group.dev.dependencies
+%pyproject_buildrequires
 
 
 %build
@@ -52,13 +52,15 @@ Summary:        %{summary}
 
 %check
 %global __pytest dbus-run-session -- %{__pytest}
-%pytest -v -Wdefault --no-cov --ignore tests/benchmarks
+%pytest --no-cov --ignore tests/benchmarks
 
 %pyproject_check_import
 
 
 %files -n python3-dbus-fast -f %{pyproject_files}
 %license LICENSE
+%doc README.md
+%doc CHANGELOG.md
 
 
 %changelog
