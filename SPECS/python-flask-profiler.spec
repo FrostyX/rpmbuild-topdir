@@ -1,12 +1,15 @@
 Name:           python-flask-profiler
-Version:        1.8
+Version:        1.8.1
 Release:        %autorelease
 Summary:        API endpoint profiler for Flask framework
 
-License:        MIT
+# The whole project is licensed under MIT except for this file:
+# flask_profiler-1.8.1/flask_profiler/static/dist/css/main.css
+# which is licensed under Apache License 2.0 and/or MIT License
+License:        MIT and Apache-2.0
+
 URL:            https://github.com/muatik/flask-profiler
 Source:         %{pypi_source flask_profiler}
-Source:         %{URL}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -56,6 +59,10 @@ Summary:        %{summary}
 %install
 %pyproject_install
 %pyproject_save_files 'flask_profiler' +auto
+
+# As per Fedora Packaging Guidelines, we should not bundle font files
+rm %{buildroot}%{python3_sitelib}/flask_profiler/static/dist/fonts/*
+sed -i '/flask_profiler\/static\/dist\/fonts\/glyphicons-/d' %{pyproject_files}
 
 
 %check
